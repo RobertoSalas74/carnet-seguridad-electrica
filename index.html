@@ -1054,6 +1054,9 @@ function setMode(mode){
   document.querySelectorAll(".mode-lototo").forEach(function(el){ el.classList.toggle("mode-hide", mode !== "lototo"); });
   $("mode-btn-carnet").classList.toggle("active", mode === "carnet");
   $("mode-btn-lototo").classList.toggle("active", mode === "lototo");
+  /* El padrón se filtra solo al tipo activo: en LOTOTO no se ven los carnets, y viceversa */
+  ui.tipo = mode;
+  $("f-filtro-tipo").value = mode;
 }
 
 function updateEditBanner(tipo, p){
