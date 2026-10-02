@@ -276,11 +276,18 @@ body{padding:24px 16px 60px;display:flex;flex-direction:column;align-items:cente
   .no-print{display:none!important}
   .print-area{display:block!important}
   .print-page{display:flex;flex-direction:column;gap:6mm;align-items:center}
-  .print-pair{display:flex;gap:6mm;page-break-inside:avoid;break-inside:avoid}
+  .print-pair{display:flex;gap:0;page-break-inside:avoid;break-inside:avoid}
   .slot{width:54mm;height:85.6mm;overflow:hidden;position:relative}
   .slot .id-card{position:absolute;top:0;left:0;
     transform:scale(var(--print-scale));transform-origin:top left;
     box-shadow:none!important;border:1px solid #9ca3af!important}
+  /* Anverso y reverso van pegados; el borde de corte no se duplica en el lado
+     que se toca, y una línea negra delgada marca dónde doblar. */
+  .print-pair .slot:first-child .id-card,
+  .print-pair .slot:first-child .lototo-card{ border-right:none!important; }
+  .print-pair .slot:last-child .id-card,
+  .print-pair .slot:last-child .lototo-card{ border-left:none!important; }
+  .print-pair .fold{ width:0; flex-shrink:0; border-left:1.1px solid #000; }
 }
 </style>
 </head>
@@ -1134,9 +1141,9 @@ function printCards(people){
 
   $("print-area").innerHTML = '<div class="print-page">' + people.map(function(p){
     if(p.tipo === "lototo"){
-      return '<div class="print-pair"><div class="slot lototo">' + lototoFrontHTML(p) + '</div><div class="slot lototo">' + lototoBackHTML(p) + '</div></div>';
+      return '<div class="print-pair"><div class="slot lototo">' + lototoFrontHTML(p) + '</div><div class="fold"></div><div class="slot lototo">' + lototoBackHTML(p) + '</div></div>';
     }
-    return '<div class="print-pair"><div class="slot">' + frontHTML(p) + '</div><div class="slot">' + backHTML(p) + '</div></div>';
+    return '<div class="print-pair"><div class="slot">' + frontHTML(p) + '</div><div class="fold"></div><div class="slot">' + backHTML(p) + '</div></div>';
   }).join("") + '</div>';
   fitAll($("print-area"));
   window.print();
