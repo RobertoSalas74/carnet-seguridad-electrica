@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carnet de Seguridad Eléctrica — Sodexo / Kimberly-Clark</title>
+<style>
+:root{
+  --kc-green:#00a651;
+  --kc-green-dark:#00713a;
+  --warn:#ffd400;
+  --ink:#111827;
+  --card-w:320px;
+  --card-h:507px;
+  --print-scale:0.63778;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:Arial,Helvetica,'Liberation Sans',sans-serif;background:#0b1220;color:#e2e8f0;min-height:100vh}
+body{padding:24px 16px 60px;display:flex;flex-direction:column;align-items:center;gap:20px}
+
+.app-header{text-align:center;max-width:960px}
+.app-header h1{font-size:20px;font-weight:bold;color:#fff}
+.app-header p{color:#94a3b8;font-size:13px;margin-top:5px}
+
+.notice{width:100%;max-width:1080px;display:flex;gap:10px;align-items:flex-start;
+  background:#3f2d0a;border:1px solid #a16207;border-left:4px solid var(--warn);
+  border-radius:8px;padding:11px 14px;font-size:12.5px;line-height:1.45;color:#fde68a}
+.notice.hidden{display:none}
+.notice svg{flex-shrink:0;margin-top:1px}
+.notice strong{color:#fef3c7}
+
+.panel{width:100%;max-width:1080px;background:#111c33;border:1px solid #24345a;border-radius:12px;
+  padding:18px;box-shadow:0 12px 30px -10px rgba(0,0,0,.55)}
+.panel-title{font-size:11px;font-weight:bold;letter-spacing:1.2px;text-transform:uppercase;
+  color:#7dd3fc;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.wide{grid-column:1/-1}
+.field label{font-size:10.5px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px}
+.field input,.field select,.field textarea{padding:9px 11px;border-radius:6px;border:1px solid #33456e;
+  background:#0b1220;color:#fff;font-size:13px;font-family:inherit;outline:none}
+.field textarea{min-height:130px;resize:vertical;line-height:1.5;font-size:12px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--kc-green);box-shadow:0 0 0 2px rgba(0,166,81,.25)}
+.field input[type=file]{padding:7px;font-size:11.5px;color:#94a3b8}
+.field .hint{font-size:10px;color:#64748b;line-height:1.35}
+.check{display:flex;align-items:center;gap:8px;font-size:12px;color:#cbd5e1}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid #24345a}
+.btn{padding:9px 16px;border-radius:6px;font-weight:bold;font-size:12.5px;cursor:pointer;border:none;
+  display:inline-flex;align-items:center;gap:7px;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid #7dd3fc;outline-offset:2px}
+.btn-primary{background:var(--kc-green);color:#fff}
+.btn-primary:hover{background:var(--kc-green-dark)}
+.btn-ghost{background:#1e2d4d;color:#cbd5e1}
+.btn-ghost:hover{background:#2b3f68}
+.btn-ok{background:#15803d;color:#fff}
+.btn-ok:hover{background:#166534}
+
+.search-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.search-box{position:relative;flex:1;min-width:220px}
+.search-box input{width:100%;padding:9px 32px 9px 34px;border-radius:6px;border:1px solid #33456e;
+  background:#0b1220;color:#fff;font-size:13px;font-family:inherit;outline:none}
+.search-box input:focus{border-color:var(--kc-green);box-shadow:0 0 0 2px rgba(0,166,81,.25)}
+.search-box .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#64748b;pointer-events:none}
+.search-box .sx{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;
+  color:#64748b;cursor:pointer;font-size:17px;line-height:1;padding:2px 5px;border-radius:4px}
+.search-box .sx:hover{color:#fff;background:#24345a}
+.search-bar select{padding:9px 11px;border-radius:6px;border:1px solid #33456e;background:#0b1220;
+  color:#fff;font-size:12.5px;font-family:inherit;outline:none;cursor:pointer}
+
+.sel-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 11px;margin-bottom:10px;
+  background:#0c1f18;border:1px solid #14532d;border-radius:7px;font-size:12px;color:#bbf7d0}
+.sel-bar.hidden{display:none}
+.sel-bar b{color:#4ade80}
+.link-btn{background:none;border:none;color:#7dd3fc;cursor:pointer;font-size:12px;font-family:inherit;
+  text-decoration:underline;padding:0}
+.link-btn:hover{color:#bae6fd}
+
+.roster-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px}
+.roster-row{display:grid;grid-template-columns:22px 56px 1fr 78px 92px 104px auto;gap:10px;align-items:center;
+  background:#0b1220;border:1px solid #24345a;border-radius:7px;padding:8px 11px;font-size:12px;cursor:pointer}
+.roster-row:hover{border-color:#3d5386}
+.roster-row.active{border-color:var(--kc-green);background:#0c1f18}
+.roster-row.picked{background:#101c2e;border-color:#3d5386}
+.roster-row input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:#00a651}
+.roster-row .rn{font-weight:bold;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.roster-row .rn mark{background:#facc15;color:#111;border-radius:2px;padding:0 1px}
+.roster-row .rm{color:#94a3b8;font-size:11px}
+.roster-row .rm mark{background:#a16207;color:#fff;border-radius:2px;padding:0 1px}
+.roster-row .rc{display:flex;gap:5px;justify-content:flex-end}
+.icon-btn{background:#1e2d4d;border:none;color:#cbd5e1;width:26px;height:26px;border-radius:5px;cursor:pointer;display:grid;place-items:center}
+.icon-btn:hover{background:#334a7a;color:#fff}
+.icon-btn.del:hover{background:#7f1d3a;color:#fecaca}
+.badge{font-size:9.5px;font-weight:bold;padding:2.5px 7px;border-radius:20px;text-align:center}
+.badge.ok{background:#052e16;color:#4ade80;border:1px solid #166534}
+.badge.soon{background:#3b2506;color:#fbbf24;border:1px solid #a16207}
+.badge.exp{background:#450a13;color:#fca5a5;border:1px solid #9f1239}
+.empty-state{padding:26px;text-align:center;color:#64748b;font-size:12.5px;border:1px dashed #33456e;border-radius:8px}
+
+.workspace{display:flex;gap:30px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.card-wrap{display:flex;flex-direction:column;align-items:center;gap:10px}
+.card-label{color:#94a3b8;font-size:11px;font-weight:bold;letter-spacing:1.4px;text-transform:uppercase}
+
+/* ===================== CARNET ===================== */
+.id-card{
+  width:var(--card-w);height:var(--card-h);background:#fff;color:#000;
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  border:1px solid #b8c0cc;box-shadow:0 16px 34px rgba(0,0,0,.45);user-select:none;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.id-card *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ---- ANVERSO ---- */
+.card-front{padding:7px 7px 8px}
+
+.fr-head{
+  background:var(--kc-green);position:relative;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;height:84px;
+}
+.fr-head .ttl{
+  font-size:29px;font-weight:bold;color:#fff;text-align:center;line-height:1.08;
+  letter-spacing:.5px;text-transform:uppercase;padding:0 40px;
+  text-shadow:1.5px 1.5px 0 #123d24,-1.5px 1.5px 0 #123d24,1.5px -1.5px 0 #123d24,-1.5px -1.5px 0 #123d24,3px 3px 3px rgba(0,0,0,.3);
+}
+.tri{position:absolute;width:35px;height:32px}
+.tri.l{left:6px;top:50%;transform:translateY(-50%)}
+.tri.r{right:6px;top:50%;transform:translateY(-50%)}
+
+.fr-body{flex-grow:1;display:flex;align-items:center;background:#fff;min-height:0}
+.side{display:flex;align-items:center;justify-content:center;width:60px;flex-shrink:0;height:100%}
+.side span{font-weight:bold;color:#000;white-space:nowrap;line-height:1}
+.side.left span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:27px;letter-spacing:2px}
+.side.right span{writing-mode:vertical-rl;font-size:25px;letter-spacing:1px}
+
+.fr-center{flex-grow:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:0}
+.photo-box{width:150px;height:210px;flex-shrink:0;overflow:hidden;background:#e5e7eb;border:1px solid #d4d8de}
+.photo-box img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.fr-name{font-size:19px;font-weight:bold;color:#111;text-align:center;line-height:1.12;
+  text-transform:uppercase;letter-spacing:.2px;max-height:46px;overflow:hidden}
+
+.cat-band{
+  background:var(--kc-green);border:1.5px solid #123d24;flex-shrink:0;margin-bottom:5px;
+  text-align:center;padding:7px 4px;font-size:21px;font-weight:bold;color:#0b2e1c;
+  text-transform:uppercase;letter-spacing:.8px;line-height:1;
+}
+.fr-foot{
+  background:var(--kc-green);color:#fff;text-align:center;padding:9px 12px;flex-shrink:0;
+  font-size:12.5px;line-height:1.32;font-weight:normal;
+}
+
+/* ---- REVERSO ---- */
+.card-back{padding:13px 12px 10px}
+
+.bk-head{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;margin-bottom:17px}
+.bk-logo{height:32px;flex-shrink:1;display:flex;align-items:center;justify-content:center;min-width:0}
+.bk-logo img{max-height:32px;max-width:165px;object-fit:contain}
+.bk-logo.empty{border:1.5px dashed #9ca3af;border-radius:4px;padding:5px 12px;
+  font-size:8px;font-weight:bold;color:#9ca3af;text-align:center;line-height:1.2;white-space:nowrap}
+.bk-head .tri{position:static;width:33px;height:30px;flex-shrink:0}
+
+.bk-meta{text-align:center;flex-shrink:0;margin-bottom:14px}
+.bk-meta .line{font-size:16.5px;color:#111;margin-bottom:11px;line-height:1.2}
+.bk-meta .line b{font-weight:bold}
+.bk-meta .vig{font-size:15px;color:#111;line-height:1.2}
+
+.rules{flex-grow:1;min-height:0;padding-right:2px}
+.rules ol{margin:0;padding-left:22px}
+.rules li{font-size:12.5px;line-height:1.3;color:#111;margin-bottom:5px;text-align:left;padding-left:2px}
+
+.qr-block{display:flex;align-items:center;justify-content:center;gap:9px;flex-shrink:0;padding-top:6px}
+.qr-block img{width:52px;height:52px;image-rendering:pixelated}
+.qr-block .qt{font-size:8px;color:#374151;line-height:1.25;text-align:left}
+
+.mode-switch{display:flex;gap:6px;background:#0b1220;border:1px solid #24345a;border-radius:9px;padding:5px;width:100%;max-width:1080px}
+.mode-btn{flex:1;padding:11px 14px;border-radius:6px;border:none;background:transparent;color:#94a3b8;
+  font-family:inherit;font-weight:bold;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.mode-btn:hover{color:#e2e8f0}
+.mode-btn.active{background:#1e2d4d;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.mode-btn.active.lototo{background:#7f1d1d;color:#fff}
+.mode-hide{display:none!important}
+.type-tag{font-size:8.5px;font-weight:bold;padding:2px 6px;border-radius:4px;letter-spacing:.4px;flex-shrink:0}
+.type-tag.carnet{background:#0c1f18;color:#4ade80;border:1px solid #166534}
+.type-tag.lototo{background:#3f1220;color:#fca5a5;border:1px solid #7f1d3a}
+
+/* ===================== TARJETA LOTOTO ===================== */
+:root{
+  --lt-stripe-w:#ffffff;
+  --lt-stripe-r:#e2231a;
+  --lt-navy:#0f4c81;
+  --card-w-lototo:340px;
+  --card-h-lototo:491px;
+}
+.lototo-card{
+  width:var(--card-w-lototo);height:var(--card-h-lototo);
+  position:relative;display:flex;flex-direction:column;color:#111;overflow:hidden;
+  background:repeating-linear-gradient(135deg,var(--lt-stripe-w) 0 16px,var(--lt-stripe-r) 16px 32px);
+  clip-path:polygon(38% 0%,62% 0%,100% 9%,100% 100%,0% 100%,0% 9%);
+  box-shadow:0 16px 34px rgba(0,0,0,.45);user-select:none;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.lototo-card *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
+
+.lt-hole{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  width:12px;height:12px;border-radius:50%;border:1.5px dashed #64748b;background:rgba(255,255,255,.55);z-index:5;
+}
+
+.lt-top{height:70px;flex-shrink:0;position:relative}
+.lt-logo{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  width:64%;height:52px;background:#fff;border-radius:3px;box-shadow:0 2px 5px rgba(0,0,0,.25);
+  display:flex;align-items:center;justify-content:center;padding:4px 8px;
+}
+.lt-logo img{max-width:100%;max-height:100%;object-fit:contain}
+
+.lt-badge{
+  flex-shrink:0;margin:0 14px;height:52px;background:#000;border-radius:5px;
+  position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.lt-badge .ring{
+  position:absolute;width:88%;height:60%;background:var(--lt-stripe-r);
+  border:3px solid #fff;border-radius:50%;
+}
+.lt-badge .word{
+  position:relative;color:#fff;font-weight:900;font-size:21px;letter-spacing:2.5px;
+  text-transform:uppercase;white-space:nowrap;
+}
+
+.lt-white{
+  flex-grow:1;margin:0 14px 14px;background:#fff;display:flex;flex-direction:column;
+  padding:9px 11px 8px;min-height:0;
+}
+
+.lt-title{font-size:26px;font-weight:900;color:var(--lt-navy);text-align:center;line-height:1.05;text-transform:uppercase}
+.lt-subtitle{font-size:13px;font-weight:800;color:var(--lt-navy);text-align:center;margin-top:2px;text-transform:uppercase}
+.lt-warn{font-size:11.5px;font-weight:800;color:var(--lt-navy);text-align:center;line-height:1.28;margin-top:10px}
+
+.lt-data{display:flex;flex-direction:column;gap:3px;margin-top:auto}
+.lt-row{border:1px solid #333;border-radius:2px;padding:3px 7px;font-size:11px;line-height:1.25;color:#111;background:#fff}
+.lt-row b{font-weight:800}
+.lt-row[data-fit-ltrow]{white-space:nowrap;overflow:hidden;height:18px;display:flex;align-items:center}
+.lt-split{display:flex;gap:6px}
+.lt-split .lt-col{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.lt-photo{width:78px;flex-shrink:0;border:1px solid #333;border-radius:2px;overflow:hidden;background:#e5e7eb}
+.lt-photo img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.lt-foot{border:1px solid #333;border-radius:2px;padding:5px 7px;font-size:12px;font-weight:900;
+  color:#111;text-align:center;margin-top:5px;text-transform:uppercase}
+
+.lt-back{flex-grow:1;display:flex;flex-direction:column;justify-content:center;gap:10%;padding:6% 14px 8%}
+.lt-box{background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:2px;padding:14px 12px;
+  font-weight:800;color:var(--lt-navy);text-align:center;text-transform:uppercase}
+.lt-box.warn{font-size:16px;line-height:1.22}
+.lt-box.reminder{font-size:12px;line-height:1.3}
+
+/* Impresión LOTOTO: 90 x 130 mm */
+@media print{
+  .slot.lototo{width:90mm;height:130mm}
+  .slot.lototo .lototo-card{position:absolute;top:0;left:0;transform:scale(1);transform-origin:top left;box-shadow:none!important}
+}
+.print-area{display:none}
+@page{size:A4 portrait;margin:10mm}
+@media print{
+  html,body{background:#fff!important;padding:0!important;margin:0!important;display:block!important}
+  .no-print{display:none!important}
+  .print-area{display:block!important}
+  .print-page{display:flex;flex-direction:column;gap:6mm;align-items:center}
+  .print-pair{display:flex;gap:6mm;page-break-inside:avoid;break-inside:avoid}
+  .slot{width:54mm;height:85.6mm;overflow:hidden;position:relative}
+  .slot .id-card{position:absolute;top:0;left:0;
+    transform:scale(var(--print-scale));transform-origin:top left;
+    box-shadow:none!important;border:1px solid #9ca3af!important}
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-card" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H4V8h16zM8.5 10a1.5 1.5 0 1 1 0 3a1.5 1.5 0 0 1 0-3M11 16H6v-.5c0-1 2-1.55 2.5-1.55S11 14.5 11 15.5zm7-5h-4v1.5h4zm0 3h-4v1.5h4z"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L1 21h22zm0 5l7.5 12h-15zM11 10v5h2v-5zm0 6.5V18h2v-1.5z"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path fill="currentColor" d="M18 7H6V3h12zm1 3.5a1 1 0 1 1 0-2a1 1 0 0 1 0 2M16 19H8v-5h8zm3-11H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zm2 5h2v9h-2zm-3 0h1.5v9H8zm5.5 0H15v9h-1.5z"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path fill="currentColor" d="M20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83l3.75 3.75zM3 17.25V21h3.75L17.8 9.94l-3.75-3.75z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7zm-5 16a3 3 0 1 1 0-6a3 3 0 0 1 0 6m3-10H5V5h10z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16a6.5 6.5 0 1 1 0-13m0 2a4.5 4.5 0 1 0 0 9a4.5 4.5 0 0 0 0-9"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path fill="currentColor" d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4a2 2 0 0 0-2 2v7c0 .55.22 1.05.59 1.41l9 9c.36.36.86.59 1.41.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42M13 20.01L4 11V4h7v-.01l9 9z"/><circle cx="6.5" cy="6.5" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path fill="currentColor" d="M16 11a4 4 0 1 0-4-4a4 4 0 0 0 4 4m-8 0a4 4 0 1 0-4-4a4 4 0 0 0 4 4m0 2c-2.7 0-8 1.34-8 4v3h9v-3c0-1.06.5-2 1.3-2.73A13 13 0 0 0 8 13m8 0c-.35 0-.74 0-1.15.07A4.7 4.7 0 0 1 16 17v3h8v-3c0-2.66-5.3-4-8-4"/></symbol>
+</svg>
+
+<header class="app-header no-print">
+  <h1>Carnet de Seguridad Eléctrica</h1>
+  <p>Formato aprobado por Kimberly-Clark · Vertical CR80 (54 × 85,6 mm) · Sodexo Perú</p>
+</header>
+
+<div class="mode-switch no-print">
+  <button class="mode-btn active" id="mode-btn-carnet" data-mode="carnet">
+    <svg width="15" height="15"><use href="#i-card"/></svg> Carnet Categoría III
+  </button>
+  <button class="mode-btn lototo" id="mode-btn-lototo" data-mode="lototo">
+    <svg width="15" height="15"><use href="#i-tag"/></svg> Tarjeta LOTOTO
+  </button>
+</div>
+
+<div class="notice no-print mode-carnet" id="logo-notice">
+  <svg width="16" height="16"><use href="#i-warn"/></svg>
+  <div><strong>Falta el logotipo de Kimberly-Clark.</strong> Cárgalo desde el archivo oficial que te entregue el cliente. Mientras el espacio esté vacío, el reverso no reproduce el formato aprobado.</div>
+</div>
+
+<div class="notice no-print hidden" id="cloud-notice">
+  <svg width="16" height="16"><use href="#i-warn"/></svg>
+  <div><strong>Sin conexión con el padrón compartido.</strong> Estás viendo y guardando solo la copia de este navegador. Lo que cargues ahora no lo verán los demás equipos hasta que vuelva la conexión — revisa tu internet y recarga la página.</div>
+</div>
+
+<div class="notice no-print hidden" id="venc-notice">
+  <svg width="16" height="16"><use href="#i-warn"/></svg>
+  <div id="venc-text"></div>
+</div>
+
+<!-- Datos del colaborador — Carnet -->
+<div class="panel no-print mode-carnet" id="panel-datos-carnet">
+  <div class="panel-title"><svg width="14" height="14"><use href="#i-edit"/></svg> Datos del colaborador</div>
+  <div class="grid">
+    <div class="field">
+      <label for="f-nombre">Nombre tal como va en el carnet</label>
+      <input type="text" id="f-nombre" placeholder="DIEGO GOMEZ CCENCHO" autocomplete="off">
+      <span class="hint">El formato del cliente usa nombre primero, luego apellidos.</span>
+    </div>
+    <div class="field">
+      <label for="f-dni">DNI / C.E. <span style="color:#64748b">(control interno)</span></label>
+      <input type="text" id="f-dni" maxlength="12" placeholder="12345678" autocomplete="off">
+      <span class="hint">No se imprime. Sirve para el padrón y evitar duplicados.</span>
+    </div>
+    <div class="field">
+      <label for="f-categoria">Categoría</label>
+      <select id="f-categoria">
+        <option>CATEGORIA I</option>
+        <option>CATEGORIA II</option>
+        <option selected>CATEGORIA III</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-emision">Fecha de emisión</label>
+      <input type="date" id="f-emision">
+    </div>
+    <div class="field">
+      <label for="f-fv">Fecha de vencimiento (FV)</label>
+      <input type="date" id="f-fv">
+      <span class="hint">Se autocompleta a un año de la emisión.</span>
+    </div>
+    <div class="field">
+      <label for="f-foto">Fotografía</label>
+      <input type="file" id="f-foto" accept="image/*">
+      <span class="hint">Proporción 3:4, fondo claro.</span>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-nuevo"><svg width="14" height="14"><use href="#i-plus"/></svg> Nuevo colaborador</button>
+    <button class="btn btn-ok" id="btn-guardar"><svg width="14" height="14"><use href="#i-save"/></svg> Guardar en el padrón</button>
+  </div>
+</div>
+
+<!-- Datos del colaborador — LOTOTO -->
+<div class="panel no-print mode-lototo mode-hide" id="panel-datos-lototo">
+  <div class="panel-title"><svg width="14" height="14"><use href="#i-edit"/></svg> Datos del colaborador</div>
+  <div class="grid">
+    <div class="field">
+      <label for="lt-nombre">Nombre tal como va en la tarjeta</label>
+      <input type="text" id="lt-nombre" placeholder="GOMEZ CCENCHO DIEGO ALONSO" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-dni">DNI / C.E. <span style="color:#64748b">(control interno)</span></label>
+      <input type="text" id="lt-dni" maxlength="12" placeholder="12345678" autocomplete="off">
+      <span class="hint">No se imprime. Sirve para el padrón y evitar duplicados.</span>
+    </div>
+    <div class="field">
+      <label for="lt-empresa">Empresa</label>
+      <input type="text" id="lt-empresa" value="SODEXO PERU SAC." autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-cargo">Cargo</label>
+      <input type="text" id="lt-cargo" placeholder="TEC. MANTENIMIENTO" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-celular">Celular</label>
+      <input type="text" id="lt-celular" placeholder="992460635" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-entrenador">Nombre de entrenador</label>
+      <input type="text" id="lt-entrenador" value="RICHAR CRUZ" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-mes">Mes de revalidación</label>
+      <select id="lt-mes">
+        <option value="Enero">Enero</option><option value="Febrero">Febrero</option>
+        <option value="Marzo">Marzo</option><option value="Abril">Abril</option>
+        <option value="Mayo">Mayo</option><option value="Junio">Junio</option>
+        <option value="Julio">Julio</option><option value="Agosto">Agosto</option>
+        <option value="Setiembre">Setiembre</option><option value="Octubre">Octubre</option>
+        <option value="Noviembre">Noviembre</option><option value="Diciembre">Diciembre</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="lt-anio">Año de revalidación</label>
+      <input type="number" id="lt-anio" min="2024" max="2040" step="1" placeholder="2027">
+    </div>
+    <div class="field">
+      <label for="lt-foto">Fotografía</label>
+      <input type="file" id="lt-foto" accept="image/*">
+      <span class="hint">Proporción 3:4, fondo claro.</span>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-nuevo-lt"><svg width="14" height="14"><use href="#i-plus"/></svg> Nuevo colaborador</button>
+    <button class="btn btn-ok" id="btn-guardar-lt"><svg width="14" height="14"><use href="#i-save"/></svg> Guardar en el padrón</button>
+  </div>
+</div>
+
+<!-- Contenido fijo del carnet -->
+<div class="panel no-print mode-carnet" id="panel-config-carnet">
+  <div class="panel-title">Contenido fijo del carnet</div>
+  <div class="grid">
+    <div class="field">
+      <label for="f-logo">Logotipo Kimberly-Clark</label>
+      <input type="file" id="f-logo" accept="image/png,image/jpeg,image/svg+xml">
+      <span class="hint">PNG o SVG oficial. Queda guardado en este equipo.</span>
+    </div>
+    <div class="field">
+      <label for="f-empresa">Empresa contratista</label>
+      <input type="text" id="f-empresa" value="SODEXO" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-titulo">Título del anverso</label>
+      <input type="text" id="f-titulo" value="SEGURIDAD ELECTRICA" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-vigencia">Texto de vigencia</label>
+      <input type="text" id="f-vigencia" value="Vigencia 1 año" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-autoriza">Texto autorización (pie del anverso)</label>
+      <input type="text" id="f-autoriza" value="Está autorizado para realizar trabajos eléctricos dentro de KCP" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-verde">Color corporativo</label>
+      <input type="color" id="f-verde" value="#00a651" style="height:38px;padding:3px">
+      <span class="hint">Ajústalo contra un carnet físico si el verde no calza.</span>
+    </div>
+    <div class="field wide">
+      <label for="f-reglas">Reglas del reverso (una por línea)</label>
+      <textarea id="f-reglas"></textarea>
+      <span class="hint">Texto transcrito del carnet vigente. Si el cliente lo actualiza, edítalo aquí.</span>
+    </div>
+    <div class="field wide">
+      <label class="check"><input type="checkbox" id="f-qr"> Agregar código QR al reverso</label>
+      <span class="hint">El formato aprobado no lleva QR. Actívalo solo si el cliente lo autoriza.</span>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-exportar">Exportar padrón (JSON)</button>
+    <button class="btn btn-ghost" id="btn-importar">Importar padrón</button>
+    <input type="file" id="f-import" accept="application/json" style="display:none">
+  </div>
+</div>
+
+<!-- Contenido fijo de la tarjeta LOTOTO -->
+<div class="panel no-print mode-lototo mode-hide" id="panel-config-lototo">
+  <div class="panel-title">Contenido fijo de la tarjeta LOTOTO</div>
+  <div class="grid">
+    <div class="field">
+      <label for="lt-titulo">Título del anverso</label>
+      <input type="text" id="lt-titulo" value="NO OPERAR" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="lt-subtitulo">Subtítulo del anverso</label>
+      <input type="text" id="lt-subtitulo" value="NO RETIRAR ESTA ETIQUETA" autocomplete="off">
+    </div>
+    <div class="field wide">
+      <label for="lt-advertencia">Párrafo de advertencia (anverso)</label>
+      <textarea id="lt-advertencia" style="min-height:60px">SI NO SE RESPETAN ESTAS ÓRDENES SE TOMARÁN MEDIDAS DISCIPLINARIAS</textarea>
+    </div>
+    <div class="field wide">
+      <label for="lt-reverso1">Texto principal del reverso</label>
+      <textarea id="lt-reverso1" style="min-height:60px">SÓLO LA PERSONA QUE SE SEÑALA EN EL REVERSO PODRÁ RETIRAR LA TARJETA / CANDADO</textarea>
+    </div>
+    <div class="field wide">
+      <label for="lt-reverso2">Recordatorio LOTOTO (reverso)</label>
+      <textarea id="lt-reverso2" style="min-height:60px">NO OLVIDE CORTAR LA ENERGÍA ANTES DE UTILIZAR EL SISTEMA LOCK OUT (CANDADO PERSONAL, PINZA Y TARJETA)</textarea>
+    </div>
+    <div class="field">
+      <label for="lt-pie">Pie del anverso</label>
+      <input type="text" id="lt-pie" value="MI VIDA ESTA EN TUS MANOS" autocomplete="off">
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-exportar-lt">Exportar padrón (JSON)</button>
+    <button class="btn btn-ghost" id="btn-importar-lt">Importar padrón</button>
+    <input type="file" id="lt-import" accept="application/json" style="display:none">
+  </div>
+</div>
+
+<!-- Padrón -->
+<div class="panel no-print">
+  <div class="panel-title"><svg width="14" height="14"><use href="#i-users"/></svg> Padrón acreditado <span id="roster-count" style="color:#64748b"></span></div>
+
+  <div class="search-bar">
+    <div class="search-box">
+      <svg class="si" width="15" height="15"><use href="#i-search"/></svg>
+      <input type="text" id="f-buscar" placeholder="Buscar por nombre o DNI…" autocomplete="off">
+      <button class="sx" id="btn-limpiar" title="Limpiar búsqueda" style="display:none">&times;</button>
+    </div>
+    <select id="f-filtro-tipo">
+      <option value="">Carnet + LOTOTO</option>
+      <option value="carnet">Solo carnet</option>
+      <option value="lototo">Solo LOTOTO</option>
+    </select>
+    <select id="f-filtro-estado">
+      <option value="">Todos los estados</option>
+      <option value="ok">Solo vigentes</option>
+      <option value="soon">Solo por vencer</option>
+      <option value="exp">Solo vencidos</option>
+    </select>
+    <select id="f-filtro-cat">
+      <option value="">Todas las categorías</option>
+      <option value="CATEGORIA I">Categoría I</option>
+      <option value="CATEGORIA II">Categoría II</option>
+      <option value="CATEGORIA III">Categoría III</option>
+    </select>
+    <select id="f-orden">
+      <option value="nombre">Ordenar por nombre</option>
+      <option value="fv">Ordenar por vencimiento</option>
+      <option value="reciente">Más recientes primero</option>
+    </select>
+  </div>
+
+  <div class="sel-bar hidden" id="sel-bar">
+    <span><b id="sel-count">0</b> seleccionado(s) para imprimir</span>
+    <button class="link-btn" id="btn-sel-none">Quitar selección</button>
+  </div>
+
+  <div id="roster-list" class="roster-list"></div>
+
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-sel-all">Seleccionar los visibles</button>
+    <button class="btn btn-ghost" id="btn-print-one"><svg width="14" height="14"><use href="#i-print"/></svg> Imprimir el del formulario</button>
+    <button class="btn btn-primary" id="btn-print-sel"><svg width="14" height="14"><use href="#i-print"/></svg> Imprimir seleccionados</button>
+  </div>
+</div>
+
+<div class="workspace no-print">
+  <div class="card-wrap"><div class="card-label">Anverso</div><div id="preview-front"></div></div>
+  <div class="card-wrap"><div class="card-label">Reverso</div><div id="preview-back"></div></div>
+</div>
+
+<div class="print-area" id="print-area"></div>
+
+<script>
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(o*r,n*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
+
+<script>
+(function(){
+"use strict";
+
+var KEY = "sdx_carnet_kc_v2";
+
+var REGLAS_DEFAULT = [
+  "El personal que realiza el trabajo estará debidamente entrenado.",
+  "La zona de trabajo estará debidamente demarcada para impedir el tráfico peatonal.",
+  "Utilizar en todo momento sus equipos de protección personal de acuerdo al riesgo.",
+  "No empezará el trabajo hasta que el permiso de trabajo eléctrico este debidamente firmado.",
+  "Asegurar todas las herramientas que se van a utilizar cuando se este realizando el trabajo.",
+  "Siempre tener la prioridad de aplicar LOTOTO previo al inicio de actividades, en caso de no ser posible se puede realizar trabajos en caliente solo por personal autorizado y competente para el tipo y voltaje de la fuente de energía."
+].join("\n");
+
+var PLACEHOLDER = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 176">' +
+  '<rect width="132" height="176" fill="#e5e7eb"/>' +
+  '<circle cx="66" cy="66" r="27" fill="#a8b0bd"/>' +
+  '<path d="M18 176c0-27 22-46 48-46s48 19 48 46z" fill="#a8b0bd"/>' +
+  '<text x="66" y="166" font-family="Arial" font-size="11" font-weight="bold" fill="#6b7280" text-anchor="middle">SIN FOTO</text>' +
+  '</svg>'
+);
+
+var TRI = '<svg class="tri {C}" viewBox="0 0 100 90"><polygon points="50,4 96,86 4,86" fill="#ffd400" stroke="#000" stroke-width="7" stroke-linejoin="round"/><path d="M53 21 L33 51 L49 51 L43 77 L69 41 L53 41 Z" fill="#000"/></svg>';
+
+/* Logo oficial de Sodexo, extraído del archivo LOTOTO del propio Roberto — es la marca de Sodexo, no de un cliente, por eso va embebida sin pedir carga manual. */
+var SODEXO_LOGO = "data:image/png;base64,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";
+
+var MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Setiembre","Octubre","Noviembre","Diciembre"];
+
+/* ---- Supabase: padrón único compartido entre equipos y personas ---- */
+var SB_URL = "https://zevbmpkomkugnzokukef.supabase.co";
+var SB_KEY = "sb_publishable_W10NCifkuqjvxJJv_EwivA_5iEc5Alx";
+var SB_REST = SB_URL + "/rest/v1/";
+function sbHeaders(extra){
+  var h = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" };
+  if(extra) for(var k in extra) h[k] = extra[k];
+  return h;
+}
+function uuid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c){
+    var r = Math.random()*16|0, v = c === "x" ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+function setCloudStatus(ok){
+  var n = $("cloud-notice");
+  if(!n) return;
+  n.classList.toggle("hidden", ok !== false);
+}
+/* Envuelve fetch para que un bloqueo del navegador (extensión, política de
+   red) nunca escape como error no controlado — siempre se resuelve como un
+   fallo de conexión normal y cae a la copia local. */
+function sbFetch(url, init){
+  try{
+    if(typeof fetch !== "function") return Promise.reject(new Error("fetch no disponible"));
+    return fetch(url, init);
+  }catch(e){ return Promise.reject(e); }
+}
+
+var state = {
+  roster: [], activeId: null, logo: null, draftPhoto: null,
+  empresa: "SODEXO",
+  titulo: "SEGURIDAD ELECTRICA",
+  vigencia: "Vigencia 1 año",
+  autoriza: "Está autorizado para realizar trabajos eléctricos dentro de KCP",
+  reglas: REGLAS_DEFAULT,
+  verde: "#00a651",
+  qr: false,
+  lt_titulo: "NO OPERAR",
+  lt_subtitulo: "NO RETIRAR ESTA ETIQUETA",
+  lt_advertencia: "SI NO SE RESPETAN ESTAS ÓRDENES SE TOMARÁN MEDIDAS DISCIPLINARIAS",
+  lt_reverso1: "SÓLO LA PERSONA QUE SE SEÑALA EN EL REVERSO PODRÁ RETIRAR LA TARJETA / CANDADO",
+  lt_reverso2: "NO OLVIDE CORTAR LA ENERGÍA ANTES DE UTILIZAR EL SISTEMA LOCK OUT (CANDADO PERSONAL, PINZA Y TARJETA)",
+  lt_pie: "MI VIDA ESTA EN TUS MANOS"
+};
+
+/* Estado de la interfaz: no se guarda, es solo de la sesión */
+var ui = { mode:"carnet", buscar:"", estado:"", cat:"", tipo:"", orden:"nombre" };
+var picked = new Set();
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function tri(side){ return TRI.replace("{C}", side); }
+
+function todayISO(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addYearsISO(iso,y){ if(!iso) return ""; var p=iso.split("-"); var d=new Date(+p[0]+y,+p[1]-1,+p[2]); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function fmt(iso){ if(!iso) return "—"; var p=iso.split("-"); return p.length===3 ? p[2]+"/"+p[1]+"/"+p[0] : "—"; }
+function daysLeft(iso){ if(!iso) return null; var p=iso.split("-"); var e=new Date(+p[0],+p[1]-1,+p[2]); var n=new Date(); n.setHours(0,0,0,0); return Math.round((e-n)/86400000); }
+function statusOf(iso){ var d=daysLeft(iso);
+  if(d===null) return {text:"SIN FECHA",key:"exp"};
+  if(d<0)      return {text:"VENCIDO",key:"exp"};
+  if(d<=30)    return {text:"POR VENCER",key:"soon"};
+  return {text:"VIGENTE",key:"ok"}; }
+
+/* La ficha LOTOTO solo declara mes/año de revalidación; se usa el último día de ese mes como fecha efectiva de vencimiento */
+function revalIso(p){
+  var idx = MESES.indexOf(p.mes);
+  if(idx < 0 || !p.anio) return "";
+  var d = new Date(+p.anio, idx+1, 0);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+/* Fecha de vencimiento efectiva, sea cual sea el tipo de registro */
+function effFV(p){ return p.tipo === "lototo" ? revalIso(p) : p.fv; }
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ alert("No se pudo guardar en este navegador. Exporta el padrón a JSON para no perder los datos."); }
+}
+function load(){
+  try{
+    var d = JSON.parse(localStorage.getItem(KEY) || "null");
+    if(!d) return;
+    Object.keys(state).forEach(function(k){ if(d[k] !== undefined && k !== "draftPhoto") state[k] = d[k]; });
+    if(!Array.isArray(state.roster)) state.roster = [];
+  }catch(e){}
+}
+
+/* ---- Sincronización con el padrón único en Supabase ----
+   localStorage sigue siendo la copia local (carga instantánea y respaldo si
+   no hay internet); Supabase es la fuente compartida entre equipos. */
+var CFG_KEYS = ["logo","empresa","titulo","vigencia","autoriza","reglas","verde","qr",
+  "lt_titulo","lt_subtitulo","lt_advertencia","lt_reverso1","lt_reverso2","lt_pie"];
+
+function sbRowFromRegistro(p){
+  return {
+    id: p.id, tipo: p.tipo, nombre: p.nombre || null, dni: p.dni || null, foto: p.foto || null,
+    categoria: p.categoria || null, emision: p.emision || null, fv: p.fv || null,
+    empresa: p.empresa || null, cargo: p.cargo || null, celular: p.celular || null,
+    entrenador: p.entrenador || null, mes: p.mes || null, anio: p.anio || null,
+    updated_at: new Date().toISOString()
+  };
+}
+
+function sbUpsertRegistro(p){
+  return sbFetch(SB_REST + "carnet_registros", {
+    method: "POST",
+    headers: sbHeaders({ "Prefer": "resolution=merge-duplicates,return=minimal" }),
+    body: JSON.stringify(sbRowFromRegistro(p))
+  }).then(function(r){ setCloudStatus(r.ok); return r.ok; })
+    .catch(function(){ setCloudStatus(false); return false; });
+}
+
+function sbDeleteRegistro(id){
+  return sbFetch(SB_REST + "carnet_registros?id=eq." + encodeURIComponent(id), {
+    method: "DELETE", headers: sbHeaders({ "Prefer": "return=minimal" })
+  }).then(function(r){ setCloudStatus(r.ok); return r.ok; })
+    .catch(function(){ setCloudStatus(false); return false; });
+}
+
+function sbUpsertConfig(patch){
+  patch.updated_at = new Date().toISOString();
+  return sbFetch(SB_REST + "carnet_config?id=eq.1", {
+    method: "PATCH", headers: sbHeaders({ "Prefer": "return=minimal" }), body: JSON.stringify(patch)
+  }).then(function(r){ setCloudStatus(r.ok); return r.ok; })
+    .catch(function(){ setCloudStatus(false); return false; });
+}
+
+function sbFetchAll(){
+  return Promise.all([
+    sbFetch(SB_REST + "carnet_registros?select=*&order=created_at.asc", { headers: sbHeaders() })
+      .then(function(r){ if(!r.ok) throw new Error("registros"); return r.json(); }),
+    sbFetch(SB_REST + "carnet_config?select=*&id=eq.1&limit=1", { headers: sbHeaders() })
+      .then(function(r){ if(!r.ok) throw new Error("config"); return r.json(); })
+  ]).then(function(res){
+    setCloudStatus(true);
+    return { roster: res[0], config: res[1][0] || null };
+  }).catch(function(){
+    setCloudStatus(false);
+    return null;
+  });
+}
+
+/* ---- QR opcional ---- */
+function qrDataURL(text){
+  var qr = null;
+  for(var t=1;t<=40;t++){ try{ var q=qrcode(t,"M"); q.addData(text); q.make(); qr=q; break; }catch(e){} }
+  if(!qr) return "";
+  var n=qr.getModuleCount(), quiet=4, size=n+quiet*2;
+  var cv=document.createElement("canvas"); cv.width=cv.height=size;
+  var ctx=cv.getContext("2d");
+  ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,size,size);
+  ctx.fillStyle="#000000";
+  for(var r=0;r<n;r++) for(var c=0;c<n;c++) if(qr.isDark(r,c)) ctx.fillRect(c+quiet,r+quiet,1,1);
+  return cv.toDataURL("image/png");
+}
+
+/* ---- Anverso ---- */
+function frontHTML(p){
+  return '' +
+  '<div class="id-card card-front" style="--kc-green:' + esc(state.verde) + '">' +
+    '<div class="fr-head">' + tri("l") +
+      '<div class="ttl" data-fit-title>' + esc(state.titulo).replace(/\s+/, "<br>") + '</div>' +
+    tri("r") + '</div>' +
+    '<div class="fr-body">' +
+      '<div class="side left"><span data-fit-side="27">' + esc(state.empresa) + '</span></div>' +
+      '<div class="fr-center">' +
+        '<div class="photo-box"><img src="' + esc(p.foto || PLACEHOLDER) + '" alt="Fotografía de ' + esc(p.nombre) + '"></div>' +
+        '<div class="fr-name" data-fit>' + esc(p.nombre || "NOMBRE DEL COLABORADOR") + '</div>' +
+      '</div>' +
+      '<div class="side right"><span data-fit-side="25">FV: ' + fmt(p.fv) + '</span></div>' +
+    '</div>' +
+    '<div class="cat-band" data-fit-cat>' + esc(p.categoria) + '</div>' +
+    '<div class="fr-foot">' + esc(state.autoriza) + '</div>' +
+  '</div>';
+}
+
+/* ---- Reverso ---- */
+function backHTML(p){
+  var logo = state.logo
+    ? '<div class="bk-logo"><img src="' + esc(state.logo) + '" alt="Kimberly-Clark"></div>'
+    : '<div class="bk-logo empty">LOGOTIPO<br>KIMBERLY-CLARK</div>';
+
+  var reglas = state.reglas.split("\n").map(function(r){ return r.trim(); }).filter(Boolean)
+    .map(function(r){ return "<li>" + esc(r) + "</li>"; }).join("");
+
+  var qrHTML = "";
+  if(state.qr){
+    var img = qrDataURL("SDX|" + (p.dni || "-") + "|" + (p.categoria || "-").replace("CATEGORIA ","CAT") + "|" + (p.fv || "-"));
+    if(img) qrHTML = '<div class="qr-block"><img src="' + img + '" alt="Código QR"><div class="qt">Verificación<br>del carnet</div></div>';
+  }
+
+  return '' +
+  '<div class="id-card card-back" style="--kc-green:' + esc(state.verde) + '">' +
+    '<div class="bk-head">' + tri("") + logo + tri("") + '</div>' +
+    '<div class="bk-meta">' +
+      '<div class="line"><b>Empresa contratista:</b> ' + esc(state.empresa) + '</div>' +
+      '<div class="line"><b>Fecha de emisión:</b> ' + fmt(p.emision) + '</div>' +
+      '<div class="vig">' + esc(state.vigencia) + '</div>' +
+    '</div>' +
+    '<div class="rules" data-fit-rules><ol>' + reglas + '</ol></div>' +
+    qrHTML +
+  '</div>';
+}
+
+/* ---- Tarjeta LOTOTO: anverso ---- */
+function lototoFrontHTML(p){
+  var rev = (p.mes||"") + (p.mes && p.anio ? "-" : "") + (p.anio||"");
+  return '' +
+  '<div class="lototo-card">' +
+    '<div class="lt-hole"></div>' +
+    '<div class="lt-top"><div class="lt-logo"><img src="' + SODEXO_LOGO + '" alt="Sodexo"></div></div>' +
+    '<div class="lt-badge"><div class="ring"></div><div class="word">PELIGRO</div></div>' +
+    '<div class="lt-white" data-fit-white>' +
+      '<div class="lt-title">' + esc(state.lt_titulo) + '</div>' +
+      '<div class="lt-subtitle">' + esc(state.lt_subtitulo) + '</div>' +
+      '<div class="lt-warn">' + esc(state.lt_advertencia) + '</div>' +
+      '<div class="lt-data">' +
+        '<div class="lt-row" data-fit-ltrow><b>Nombre:</b> ' + esc(p.nombre || "—") + '</div>' +
+        '<div class="lt-row"><b>Empresa:</b> ' + esc(p.empresa || "—") + '</div>' +
+        '<div class="lt-split">' +
+          '<div class="lt-col">' +
+            '<div class="lt-row"><b>Cargo:</b> ' + esc(p.cargo || "—") + '</div>' +
+            '<div class="lt-row"><b>Celular:</b> ' + esc(p.celular || "—") + '</div>' +
+            '<div class="lt-row"><b>F. revalidación:</b> ' + esc(rev || "—") + '</div>' +
+          '</div>' +
+          '<div class="lt-photo"><img src="' + esc(p.foto || PLACEHOLDER) + '" alt="Fotografía de ' + esc(p.nombre) + '"></div>' +
+        '</div>' +
+        '<div class="lt-row"><b>Nombre de Entrenador:</b> ' + esc(p.entrenador || "—") + '</div>' +
+      '</div>' +
+      '<div class="lt-foot">' + esc(state.lt_pie) + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ---- Tarjeta LOTOTO: reverso ---- */
+function lototoBackHTML(p){
+  return '' +
+  '<div class="lototo-card">' +
+    '<div class="lt-hole"></div>' +
+    '<div class="lt-top"><div class="lt-logo"><img src="' + SODEXO_LOGO + '" alt="Sodexo"></div></div>' +
+    '<div class="lt-badge"><div class="ring"></div><div class="word">PELIGRO</div></div>' +
+    '<div class="lt-back">' +
+      '<div class="lt-box warn">' + esc(state.lt_reverso1) + '</div>' +
+      '<div class="lt-box reminder">' + esc(state.lt_reverso2) + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* Autoajuste: nada puede desbordar la tarjeta */
+function fitAll(root){
+  /* Nombre del colaborador */
+  root.querySelectorAll("[data-fit]").forEach(function(el){
+    var s = 19; el.style.fontSize = s + "px";
+    while(el.scrollHeight > el.clientHeight + 1 && s > 10){ s -= 0.5; el.style.fontSize = s + "px"; }
+  });
+
+  /* Título de la cabecera verde */
+  root.querySelectorAll("[data-fit-title]").forEach(function(el){
+    var s = 29; el.style.fontSize = s + "px";
+    while((el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) && s > 13){
+      s -= 0.5; el.style.fontSize = s + "px";
+    }
+  });
+
+  /* Textos verticales laterales (SODEXO / FV) */
+  root.querySelectorAll("[data-fit-side]").forEach(function(el){
+    var box = el.parentNode;
+    var s = parseFloat(el.dataset.fitSide) || 27;
+    el.style.fontSize = s + "px";
+    while(el.scrollHeight > box.clientHeight - 6 && s > 10){ s -= 0.5; el.style.fontSize = s + "px"; }
+  });
+
+  /* Banda de categoría */
+  root.querySelectorAll("[data-fit-cat]").forEach(function(el){
+    var s = 21; el.style.fontSize = s + "px";
+    while(el.scrollWidth > el.clientWidth && s > 11){ s -= 0.5; el.style.fontSize = s + "px"; }
+  });
+
+  /* Reglas del reverso */
+  root.querySelectorAll("[data-fit-rules]").forEach(function(el){
+    var ol = el.querySelector("ol"); if(!ol) return;
+    var s = 12.5;
+    var apply = function(v){ el.querySelectorAll("li").forEach(function(li){ li.style.fontSize = v + "px"; }); };
+    apply(s);
+    while(ol.scrollHeight > el.clientHeight && s > 6){ s -= 0.2; apply(s); }
+  });
+
+  /* LOTOTO: si el conjunto de filas no cabe, se reduce en bloque (nunca se recorta) */
+  root.querySelectorAll("[data-fit-white]").forEach(function(el){
+    var s = 11;
+    var apply = function(v){ el.querySelectorAll(".lt-row:not([data-fit-ltrow]),.lt-foot").forEach(function(r){ r.style.fontSize = v + "px"; }); };
+    apply(s);
+    var tries = 0;
+    while(el.scrollHeight > el.clientHeight + 1 && s > 7 && tries < 50){ s -= 0.15; apply(s); tries++; }
+  });
+
+  /* LOTOTO: la fila de nombre tiene alto fijo, se ajusta aparte */
+  root.querySelectorAll("[data-fit-ltrow]").forEach(function(el){
+    var s = 11; el.style.fontSize = s + "px";
+    while(el.scrollHeight > el.clientHeight + 1 && s > 7){ s -= 0.3; el.style.fontSize = s + "px"; }
+  });
+}
+
+/* ---- formulario / padrón ---- */
+function currentDraftCarnet(){
+  return {
+    id: state.activeId || uuid(),
+    tipo: "carnet",
+    nombre: $("f-nombre").value.trim().toUpperCase(),
+    dni: $("f-dni").value.trim(),
+    categoria: $("f-categoria").value,
+    emision: $("f-emision").value,
+    fv: $("f-fv").value,
+    foto: state.draftPhoto
+  };
+}
+
+function currentDraftLototo(){
+  return {
+    id: state.activeId || uuid(),
+    tipo: "lototo",
+    nombre: $("lt-nombre").value.trim().toUpperCase(),
+    dni: $("lt-dni").value.trim(),
+    empresa: $("lt-empresa").value.trim().toUpperCase() || "SODEXO PERU SAC.",
+    cargo: $("lt-cargo").value.trim().toUpperCase(),
+    celular: $("lt-celular").value.trim(),
+    entrenador: $("lt-entrenador").value.trim().toUpperCase(),
+    mes: $("lt-mes").value,
+    anio: $("lt-anio").value.trim(),
+    foto: state.draftPhoto
+  };
+}
+
+function currentDraft(){
+  return ui.mode === "lototo" ? currentDraftLototo() : currentDraftCarnet();
+}
+
+function updateVencNotice(fv){
+  var st = statusOf(fv), n = $("venc-notice");
+  if(fv && st.key !== "ok"){
+    var d = daysLeft(fv);
+    $("venc-text").innerHTML = st.key === "exp"
+      ? "<strong>Este registro figura como VENCIDO.</strong> La fecha es " + fmt(fv) + ", hace " + Math.abs(d) + " día(s). Renueva antes de emitirlo."
+      : "<strong>Este registro vence en " + d + " día(s)</strong> (" + fmt(fv) + "). Programa la renovación.";
+    n.classList.remove("hidden");
+  } else n.classList.add("hidden");
+}
+
+function renderPreview(){
+  var p = currentDraft();
+  if(p.tipo === "lototo"){
+    $("preview-front").innerHTML = lototoFrontHTML(p);
+    $("preview-back").innerHTML = lototoBackHTML(p);
+    fitAll($("preview-front")); fitAll($("preview-back"));
+    updateVencNotice(revalIso(p));
+  } else {
+    $("preview-front").innerHTML = frontHTML(p);
+    $("preview-back").innerHTML = backHTML(p);
+    fitAll($("preview-front")); fitAll($("preview-back"));
+    $("logo-notice").classList.toggle("hidden", !!state.logo);
+    updateVencNotice(p.fv);
+  }
+}
+
+/* Normaliza para que la búsqueda ignore tildes y mayúsculas */
+function norm(s){
+  return String(s||"").toUpperCase()
+    .replace(/[ÁÀÄÂ]/g,"A").replace(/[ÉÈËÊ]/g,"E").replace(/[ÍÌÏÎ]/g,"I")
+    .replace(/[ÓÒÖÔ]/g,"O").replace(/[ÚÙÜÛ]/g,"U").replace(/Ñ/g,"N");
+}
+
+/* Resalta el tramo buscado sin romper el escapado */
+function mark(txt, q){
+  var safe = esc(txt);
+  if(!q) return safe;
+  var i = norm(safe).indexOf(norm(q));
+  if(i < 0) return safe;
+  return safe.slice(0,i) + "<mark>" + safe.slice(i, i+q.length) + "</mark>" + safe.slice(i+q.length);
+}
+
+/* Aplica búsqueda, filtros y orden */
+function visibleRoster(){
+  var q = ui.buscar.trim();
+  var out = state.roster.filter(function(p){
+    if(ui.tipo && p.tipo !== ui.tipo) return false;
+    if(ui.estado && statusOf(effFV(p)).key !== ui.estado) return false;
+    if(ui.cat && (p.tipo !== "carnet" || p.categoria !== ui.cat)) return false;
+    if(q && norm(p.nombre).indexOf(norm(q)) < 0 && norm(p.dni).indexOf(norm(q)) < 0) return false;
+    return true;
+  });
+
+  if(ui.orden === "nombre")   out.sort(function(a,b){ return norm(a.nombre).localeCompare(norm(b.nombre)); });
+  else if(ui.orden === "fv")  out.sort(function(a,b){ return (effFV(a)||"9999").localeCompare(effFV(b)||"9999"); });
+  else                        out.reverse();
+
+  return out;
+}
+
+function renderRoster(){
+  var list = $("roster-list");
+  var vis = visibleRoster();
+  var total = state.roster.length;
+
+  $("roster-count").textContent = total
+    ? (vis.length === total ? "· " + total : "· " + vis.length + " de " + total)
+    : "";
+
+  $("btn-limpiar").style.display = ui.buscar ? "block" : "none";
+
+  var n = picked.size;
+  $("sel-bar").classList.toggle("hidden", n === 0);
+  $("sel-count").textContent = n;
+
+  if(!total){
+    list.innerHTML = '<div class="empty-state">Aún no hay colaboradores guardados. Completa los datos y pulsa «Guardar en el padrón».</div>';
+    return;
+  }
+  if(!vis.length){
+    list.innerHTML = '<div class="empty-state">Ningún colaborador coincide con la búsqueda o los filtros aplicados.</div>';
+    return;
+  }
+
+  var q = ui.buscar.trim();
+  list.innerHTML = vis.map(function(p){
+    var st = statusOf(effFV(p));
+    var sel = picked.has(p.id);
+    var esLototo = p.tipo === "lototo";
+    var mid = esLototo ? (p.cargo || "—") : esc((p.categoria||"").replace("CATEGORIA","CAT."));
+    return '<div class="roster-row' + (p.id===state.activeId?" active":"") + (sel?" picked":"") + '" data-id="' + esc(p.id) + '">' +
+      '<div><input type="checkbox" data-act="pick"' + (sel?" checked":"") + ' title="Marcar para imprimir"></div>' +
+      '<div><span class="type-tag ' + (esLototo?"lototo":"carnet") + '">' + (esLototo?"LOTOTO":"CARNET") + '</span></div>' +
+      '<div><div class="rn">' + mark(p.nombre||"(sin nombre)", q) + '</div>' +
+           '<div class="rm">DNI ' + mark(p.dni||"—", q) + '</div></div>' +
+      '<div class="rm">' + (esLototo ? esc(mid) : mid) + '</div>' +
+      '<div class="rm">' + fmt(effFV(p)) + '</div>' +
+      '<div><span class="badge ' + st.key + '">' + st.text + '</span></div>' +
+      '<div class="rc">' +
+        '<button class="icon-btn" data-act="edit" title="Cargar en el formulario"><svg width="13" height="13"><use href="#i-edit"/></svg></button>' +
+        '<button class="icon-btn del" data-act="del" title="Eliminar"><svg width="13" height="13"><use href="#i-trash"/></svg></button>' +
+      '</div></div>';
+  }).join("");
+}
+
+function setMode(mode){
+  ui.mode = mode;
+  document.querySelectorAll(".mode-carnet").forEach(function(el){ el.classList.toggle("mode-hide", mode !== "carnet"); });
+  document.querySelectorAll(".mode-lototo").forEach(function(el){ el.classList.toggle("mode-hide", mode !== "lototo"); });
+  $("mode-btn-carnet").classList.toggle("active", mode === "carnet");
+  $("mode-btn-lototo").classList.toggle("active", mode === "lototo");
+}
+
+function fillForm(p){
+  var tipo = p.tipo || "carnet";
+  setMode(tipo);
+  if(tipo === "lototo"){
+    $("lt-nombre").value = p.nombre || "";
+    $("lt-dni").value = p.dni || "";
+    $("lt-empresa").value = p.empresa || "SODEXO PERU SAC.";
+    $("lt-cargo").value = p.cargo || "";
+    $("lt-celular").value = p.celular || "";
+    $("lt-entrenador").value = p.entrenador || "RICHAR CRUZ";
+    $("lt-mes").value = p.mes || "Enero";
+    $("lt-anio").value = p.anio || "";
+    state.draftPhoto = p.foto || null;
+    $("lt-foto").value = "";
+  } else {
+    $("f-nombre").value = p.nombre || "";
+    $("f-dni").value = p.dni || "";
+    $("f-categoria").value = p.categoria || "CATEGORIA III";
+    $("f-emision").value = p.emision || "";
+    $("f-fv").value = p.fv || "";
+    state.draftPhoto = p.foto || null;
+    $("f-foto").value = "";
+  }
+  state.activeId = p.id || null;
+  renderPreview(); renderRoster();
+}
+
+function blankForm(){
+  if(ui.mode === "lototo"){
+    var now = new Date();
+    fillForm({
+      id:null, tipo:"lototo", nombre:"", dni:"", empresa:"SODEXO PERU SAC.", cargo:"", celular:"",
+      entrenador:"RICHAR CRUZ", mes: MESES[now.getMonth()], anio: String(now.getFullYear()+1), foto:null
+    });
+  } else {
+    fillForm({ id:null, tipo:"carnet", nombre:"", dni:"", categoria:"CATEGORIA III",
+      emision: todayISO(), fv: addYearsISO(todayISO(),1), foto:null });
+  }
+}
+
+/* ---- impresión ---- */
+function printCards(people){
+  if(!people.length){ alert("No hay tarjetas que imprimir."); return; }
+
+  var faltaLogo = people.some(function(p){ return p.tipo !== "lototo" && !state.logo; });
+  if(faltaLogo && !confirm("Uno o más carnets no tienen el logotipo de Kimberly-Clark. ¿Imprimir de todas formas?")) return;
+
+  var venc = people.filter(function(p){ return statusOf(effFV(p)).key === "exp"; });
+  if(venc.length && !confirm(venc.length + " tarjeta(s) figuran como VENCIDA(S) o sin fecha. ¿Imprimir igual?")) return;
+
+  $("print-area").innerHTML = '<div class="print-page">' + people.map(function(p){
+    if(p.tipo === "lototo"){
+      return '<div class="print-pair"><div class="slot lototo">' + lototoFrontHTML(p) + '</div><div class="slot lototo">' + lototoBackHTML(p) + '</div></div>';
+    }
+    return '<div class="print-pair"><div class="slot">' + frontHTML(p) + '</div><div class="slot">' + backHTML(p) + '</div></div>';
+  }).join("") + '</div>';
+  fitAll($("print-area"));
+  window.print();
+}
+
+/* ---- eventos ---- */
+["f-nombre","f-dni","f-categoria","f-emision","f-fv"].forEach(function(id){
+  $(id).addEventListener("input", renderPreview);
+  $(id).addEventListener("change", renderPreview);
+});
+
+["lt-nombre","lt-dni","lt-empresa","lt-cargo","lt-celular","lt-entrenador","lt-mes","lt-anio"].forEach(function(id){
+  $(id).addEventListener("input", renderPreview);
+  $(id).addEventListener("change", renderPreview);
+});
+
+/* Evita mandar una petición a Supabase por cada tecla mientras se escribe */
+var cfgSyncTimer = null;
+function syncConfigDebounced(patch){
+  clearTimeout(cfgSyncTimer);
+  cfgSyncTimer = setTimeout(function(){ sbUpsertConfig(patch); }, 600);
+}
+
+var cfg = { "f-empresa":"empresa", "f-titulo":"titulo", "f-vigencia":"vigencia",
+            "f-autoriza":"autoriza", "f-reglas":"reglas", "f-verde":"verde" };
+Object.keys(cfg).forEach(function(id){
+  $(id).addEventListener("input", function(){
+    state[cfg[id]] = this.value;
+    save(); renderPreview();
+    var patch = {}; patch[cfg[id]] = this.value;
+    syncConfigDebounced(patch);
+  });
+});
+
+var cfgLt = { "lt-titulo":"lt_titulo", "lt-subtitulo":"lt_subtitulo", "lt-advertencia":"lt_advertencia",
+              "lt-reverso1":"lt_reverso1", "lt-reverso2":"lt_reverso2", "lt-pie":"lt_pie" };
+Object.keys(cfgLt).forEach(function(id){
+  $(id).addEventListener("input", function(){
+    state[cfgLt[id]] = this.value;
+    save(); renderPreview();
+    var patch = {}; patch[cfgLt[id]] = this.value;
+    syncConfigDebounced(patch);
+  });
+});
+
+$("f-qr").addEventListener("change", function(){
+  state.qr = this.checked; save(); renderPreview();
+  sbUpsertConfig({ qr: state.qr });
+});
+
+["change","input"].forEach(function(ev){
+  $("f-emision").addEventListener(ev, function(){
+    if(this.value){ $("f-fv").value = addYearsISO(this.value, 1); renderPreview(); }
+  });
+});
+
+/* Las fotos de celular pueden pesar 2-4 MB; el navegador solo da ~5-10 MB
+   de almacenamiento por sitio. Sin comprimir, el padrón se llena a los 2-3
+   colaboradores y el guardado empieza a fallar en silencio. Se reduce cada
+   foto a un JPEG liviano antes de guardarla. */
+function comprimirFoto(file, onReady){
+  var reader = new FileReader();
+  reader.onerror = function(){ alert("No se pudo leer la imagen. Prueba con otro archivo."); };
+  reader.onload = function(){
+    var img = new Image();
+    img.onerror = function(){ alert("El archivo no parece ser una imagen válida."); };
+    img.onload = function(){
+      var maxLado = 480;
+      var w = img.naturalWidth, h = img.naturalHeight;
+      var escala = Math.min(1, maxLado / Math.max(w, h));
+      var cv = document.createElement("canvas");
+      cv.width = Math.round(w * escala);
+      cv.height = Math.round(h * escala);
+      var ctx = cv.getContext("2d");
+      ctx.drawImage(img, 0, 0, cv.width, cv.height);
+      onReady(cv.toDataURL("image/jpeg", 0.82));
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+$("f-foto").addEventListener("change", function(e){
+  var f = e.target.files[0]; if(!f) return;
+  comprimirFoto(f, function(dataUrl){ state.draftPhoto = dataUrl; renderPreview(); });
+});
+
+$("lt-foto").addEventListener("change", function(e){
+  var f = e.target.files[0]; if(!f) return;
+  comprimirFoto(f, function(dataUrl){ state.draftPhoto = dataUrl; renderPreview(); });
+});
+
+$("f-logo").addEventListener("change", function(e){
+  var f = e.target.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    state.logo = r.result; save(); renderPreview();
+    sbUpsertConfig({ logo: state.logo });
+  };
+  r.onerror = function(){ alert("No se pudo leer el logotipo. Prueba con otro archivo."); };
+  r.readAsDataURL(f);
+});
+
+/* --- conmutador de modo --- */
+$("mode-btn-carnet").addEventListener("click", function(){ ui.mode = "carnet"; blankForm(); });
+$("mode-btn-lototo").addEventListener("click", function(){ ui.mode = "lototo"; blankForm(); });
+
+/* --- nuevo / guardar: Carnet --- */
+$("btn-nuevo").addEventListener("click", function(){ ui.mode = "carnet"; blankForm(); });
+
+$("btn-guardar").addEventListener("click", function(){
+  var p = currentDraftCarnet();
+  if(!p.nombre){ alert("Escribe el nombre del colaborador."); $("f-nombre").focus(); return; }
+  if(!/^[0-9A-Za-z]{8,12}$/.test(p.dni)){ alert("El DNI o carné de extranjería debe tener entre 8 y 12 caracteres."); $("f-dni").focus(); return; }
+  if(!p.fv){ alert("Indica la fecha de vencimiento (FV)."); $("f-fv").focus(); return; }
+  if(p.emision && p.fv <= p.emision){ alert("La FV debe ser posterior a la fecha de emisión."); $("f-fv").focus(); return; }
+
+  var dup = state.roster.filter(function(x){ return x.tipo === "carnet" && x.id !== p.id && x.dni === p.dni; });
+  if(dup.length && !confirm("Ya existe un carnet con ese DNI (" + dup[0].nombre + "). ¿Continuar?")) return;
+
+  var i = state.roster.findIndex(function(x){ return x.id === p.id; });
+  if(i >= 0) state.roster[i] = p; else state.roster.push(p);
+  state.activeId = p.id;
+  save(); fillForm(p);
+  sbUpsertRegistro(p);
+});
+
+/* --- nuevo / guardar: LOTOTO --- */
+$("btn-nuevo-lt").addEventListener("click", function(){ ui.mode = "lototo"; blankForm(); });
+
+$("btn-guardar-lt").addEventListener("click", function(){
+  var p = currentDraftLototo();
+  if(!p.nombre){ alert("Escribe el nombre del colaborador."); $("lt-nombre").focus(); return; }
+  if(!/^[0-9A-Za-z]{8,12}$/.test(p.dni)){ alert("El DNI o carné de extranjería debe tener entre 8 y 12 caracteres."); $("lt-dni").focus(); return; }
+  if(!p.cargo){ alert("Indica el cargo del colaborador."); $("lt-cargo").focus(); return; }
+  if(!p.anio || +p.anio < 2020){ alert("Indica el año de revalidación."); $("lt-anio").focus(); return; }
+
+  var dup = state.roster.filter(function(x){ return x.tipo === "lototo" && x.id !== p.id && x.dni === p.dni; });
+  if(dup.length && !confirm("Ya existe una tarjeta LOTOTO con ese DNI (" + dup[0].nombre + "). ¿Continuar?")) return;
+
+  var i = state.roster.findIndex(function(x){ return x.id === p.id; });
+  if(i >= 0) state.roster[i] = p; else state.roster.push(p);
+  state.activeId = p.id;
+  save(); fillForm(p);
+  sbUpsertRegistro(p);
+});
+
+$("roster-list").addEventListener("click", function(e){
+  var row = e.target.closest(".roster-row"); if(!row) return;
+  var p = state.roster.find(function(x){ return x.id === row.dataset.id; }); if(!p) return;
+  var btn = e.target.closest("[data-act]");
+  var act = btn && btn.dataset.act;
+
+  if(act === "pick"){
+    if(picked.has(p.id)) picked.delete(p.id); else picked.add(p.id);
+    renderRoster();
+    return;
+  }
+  if(act === "del"){
+    var etiqueta = p.tipo === "lototo" ? "la tarjeta LOTOTO" : "el carnet";
+    if(confirm("Eliminar " + etiqueta + " de " + p.nombre + " del padrón?")){
+      state.roster = state.roster.filter(function(x){ return x.id !== p.id; });
+      picked.delete(p.id);
+      if(state.activeId === p.id) blankForm();
+      save(); renderRoster();
+      sbDeleteRegistro(p.id);
+    }
+    return;
+  }
+  fillForm(p);
+});
+
+/* --- búsqueda y filtros --- */
+$("f-buscar").addEventListener("input", function(){ ui.buscar = this.value; renderRoster(); });
+$("btn-limpiar").addEventListener("click", function(){ ui.buscar = ""; $("f-buscar").value = ""; renderRoster(); $("f-buscar").focus(); });
+$("f-filtro-tipo").addEventListener("change", function(){ ui.tipo = this.value; renderRoster(); });
+$("f-filtro-estado").addEventListener("change", function(){ ui.estado = this.value; renderRoster(); });
+$("f-filtro-cat").addEventListener("change", function(){ ui.cat = this.value; renderRoster(); });
+$("f-orden").addEventListener("change", function(){ ui.orden = this.value; renderRoster(); });
+
+/* Escape limpia la búsqueda */
+$("f-buscar").addEventListener("keydown", function(e){
+  if(e.key === "Escape"){ ui.buscar = ""; this.value = ""; renderRoster(); }
+});
+
+/* --- selección --- */
+$("btn-sel-all").addEventListener("click", function(){
+  var vis = visibleRoster();
+  if(!vis.length){ alert("No hay colaboradores visibles para seleccionar."); return; }
+  var todos = vis.every(function(p){ return picked.has(p.id); });
+  vis.forEach(function(p){ if(todos) picked.delete(p.id); else picked.add(p.id); });
+  renderRoster();
+});
+
+$("btn-sel-none").addEventListener("click", function(){ picked.clear(); renderRoster(); });
+
+/* --- impresión --- */
+$("btn-print-one").addEventListener("click", function(){ printCards([currentDraft()]); });
+
+$("btn-print-sel").addEventListener("click", function(){
+  if(!picked.size){
+    alert("Marca al menos un colaborador en el padrón, o usa «Seleccionar los visibles».");
+    return;
+  }
+  /* Se imprime en el orden en que se ven en pantalla */
+  printCards(visibleRoster().filter(function(p){ return picked.has(p.id); }));
+});
+
+/* --- exportar / importar: comparten un único padrón --- */
+function exportPadron(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "padron_seguridad_" + todayISO() + ".json";
+  a.click(); URL.revokeObjectURL(a.href);
+}
+$("btn-exportar").addEventListener("click", exportPadron);
+$("btn-exportar-lt").addEventListener("click", exportPadron);
+
+$("btn-importar").addEventListener("click", function(){ $("f-import").click(); });
+$("btn-importar-lt").addEventListener("click", function(){ $("lt-import").click(); });
+
+function handleImport(e){
+  var f = e.target.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var d = JSON.parse(r.result);
+      if(!Array.isArray(d.roster)) throw new Error("formato");
+      if(!confirm("Se reemplazará el padrón actual (" + state.roster.length + " registros) por " + d.roster.length + ". ¿Continuar?")) return;
+      Object.keys(state).forEach(function(k){ if(d[k] !== undefined && k !== "draftPhoto") state[k] = d[k]; });
+      var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      state.roster.forEach(function(x){
+        if(!x.tipo) x.tipo = "carnet"; /* migración de padrones antiguos */
+        if(!x.id || !UUID_RE.test(x.id)) x.id = uuid(); /* ids viejos no compatibles con Supabase */
+      });
+      save(); syncConfig(); blankForm();
+      /* Sube el padrón importado al compartido para que lo vean los demás equipos */
+      state.roster.forEach(function(p){ sbUpsertRegistro(p); });
+      var cfgPatch = {}; CFG_KEYS.forEach(function(k){ cfgPatch[k] = state[k]; });
+      sbUpsertConfig(cfgPatch);
+    }catch(err){ alert("El archivo no tiene el formato esperado. Usa un JSON exportado desde esta misma herramienta."); }
+  };
+  r.readAsText(f); e.target.value = "";
+}
+$("f-import").addEventListener("change", handleImport);
+$("lt-import").addEventListener("change", handleImport);
+
+window.addEventListener("afterprint", function(){ $("print-area").innerHTML = ""; });
+
+function syncConfig(){
+  $("f-empresa").value = state.empresa;
+  $("f-titulo").value = state.titulo;
+  $("f-vigencia").value = state.vigencia;
+  $("f-autoriza").value = state.autoriza;
+  $("f-reglas").value = state.reglas;
+  $("f-verde").value = state.verde;
+  $("f-qr").checked = !!state.qr;
+  $("lt-titulo").value = state.lt_titulo;
+  $("lt-subtitulo").value = state.lt_subtitulo;
+  $("lt-advertencia").value = state.lt_advertencia;
+  $("lt-reverso1").value = state.lt_reverso1;
+  $("lt-reverso2").value = state.lt_reverso2;
+  $("lt-pie").value = state.lt_pie;
+}
+
+/* 1) Copia local: pinta de inmediato, sin esperar a la red */
+load();
+state.roster.forEach(function(x){ if(!x.tipo) x.tipo = "carnet"; }); /* migración de padrones antiguos */
+syncConfig();
+setMode("carnet");
+renderRoster();
+if(state.roster.length) fillForm(state.roster[0]); else blankForm();
+
+/* 2) Padrón compartido: si hay conexión, reemplaza la copia local por la
+   versión de Supabase (la que ven todos) y refresca la pantalla. */
+sbFetchAll().then(function(data){
+  if(!data) return; /* sin conexión: se queda con la copia local, con el aviso ya visible */
+  state.roster = data.roster || [];
+  if(data.config) CFG_KEYS.forEach(function(k){ if(data.config[k] !== undefined && data.config[k] !== null) state[k] = data.config[k]; });
+  save();
+  syncConfig();
+  renderRoster();
+  if(state.activeId){
+    var activo = state.roster.find(function(x){ return x.id === state.activeId; });
+    if(activo) fillForm(activo); else if(state.roster.length) fillForm(state.roster[0]); else blankForm();
+  } else if(state.roster.length) fillForm(state.roster[0]);
+  else renderPreview();
+});
+
+
+})();
+</script>
+</body>
+</html>
